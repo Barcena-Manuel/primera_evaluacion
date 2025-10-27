@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,20 +22,28 @@ public class ProfesionalController {
     @Autowired
     private ProfesionalService service;
 
+    @PostMapping
     public ResponseEntity<Profesional> crearProfesional(@RequestBody Profesional profesional) {
-        Profesional nuevoProfesional = service.crearProfesional(profesional.getNombreCompleto(), profesional.getEspecialidad());
-        if(nuevoProfesional == null){
+        try {
+            Profesional nuevo = service.crearProfesional(profesional);
+            return new ResponseEntity<>(nuevo, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(nuevoProfesional, HttpStatus.CREATED);
     }
 
-    public ResponseEntity<List<Profesional>> obtenerProfesionalPorEspecialidad(@RequestParam(required = false) String especialidad){
+
+    @GetMapping
+    public ResponseEntity<List<Profesional>> obtenerProfesionalPorEspecialidad(@RequestParam(required = false) String especialidad) {
         List<Profesional> profesionales = service.obtenerTodosLosProfesionales();
-        List<Profesional> profesionalFilatrado = profesionales.stream().filter(p ->especialidad != null && p.getEspecialidad().equals(especialidad)).toList();
-        if(profesionalFilatrado == null){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        if (especialidad != null) {
+            profesionales = profesionales.stream()
+                .filter(p -> p.getEspecialidad().equalsIgnoreCase(especialidad))
+                .toList();
         }
-        return new ResponseEntity<>(profesionalFilatrado, HttpStatus.OK);
+
+        return new ResponseEntity<>(profesionales, HttpStatus.OK);
     }
+
 }

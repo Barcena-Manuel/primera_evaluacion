@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.mobydigital.primera_evluacion.gestorturnos.exception.DuplicadoException;
+import com.mobydigital.primera_evluacion.gestorturnos.exception.RecursoNoEncontradoException;
 import com.mobydigital.primera_evluacion.gestorturnos.model.Profesional;
 import com.mobydigital.primera_evluacion.gestorturnos.repository.interfaces.ProfesionalRepository;
 
@@ -14,35 +16,32 @@ public class ProfesionalService {
     @Autowired
     private ProfesionalRepository repository;
 
-    public Profesional crearProfesional(String nombreCompleto, String especialidad) {
-        List<Profesional> profesionales = repository.obtenerTodosLosProfesionales();
-        boolean existe = profesionales.stream().anyMatch(p ->
-            p.getNombreCompleto().equals(nombreCompleto) && p.getEspecialidad().equals(especialidad));
-        if(existe){
-            throw new IllegalArgumentException("El profesional ya está registrado");
+    public Profesional crearProfesional(Profesional profesional) throws DuplicadoException{ 
+        boolean duplicado = repository.obtenerTodosLosProfesionales().stream()
+            .anyMatch(p -> p.getNombreCompleto().equalsIgnoreCase(profesional.getNombreCompleto()) &&
+                           p.getEspecialidad().equalsIgnoreCase(profesional.getEspecialidad()));
+
+        if (duplicado) {
+            throw new DuplicadoException("Ya existe un profesional con ese nombre y especialidad");
         }
-        return repository.crearProfesional(nombreCompleto, especialidad);
+
+        return repository.guardarProfesional(profesional);
     }
 
-    public Profesional obtenerProfesionalPorId(Long id){
+    public Profesional obtenerProfesionalPorId(Long id) throws RecursoNoEncontradoException{
         if(id == null || id <= 0){
-            throw new IllegalArgumentException("El ID del profesional no es válido");
+            throw new RecursoNoEncontradoException("El ID del profesional no es válido");
         }
         return repository.obtenerProfesionalPorId(id);
     }
 
     public List<Profesional> obtenerTodosLosProfesionales(){
-        List<Profesional> profesionales = repository.obtenerTodosLosProfesionales();
-        if(profesionales.isEmpty()){
-            throw new IllegalArgumentException("No hay profesionales registrados");
-        }
         return repository.obtenerTodosLosProfesionales();
     }
 
-    public void eliminarPacientePorId(Long id){
-        Profesional profesional = obtenerProfesionalPorId(id);
-        if(profesional == null){
-            throw new IllegalArgumentException("No se encontró un profesional con el ID proporcionado");
+    public void eliminarProfesionalPorId(Long id) throws RecursoNoEncontradoException{
+        if(id == null || id <= 0){
+            throw new RecursoNoEncontradoException("El ID del profesional no es válido");
         }
         repository.eliminarProfesionalPorId(id);
     }

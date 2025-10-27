@@ -25,33 +25,37 @@ public class PacienteController {
 
     @PostMapping
     public ResponseEntity<Paciente> crearPaciente(@RequestBody Paciente paciente) {
-        Paciente nuevoPaciente = service.crearPaciente(paciente.getNombre(), paciente.getApellido(), paciente.getDni(), paciente.getEmail());
-        if(nuevoPaciente == null){
+        try {
+            Paciente nuevoPaciente = service.crearPaciente(paciente);
+            return new ResponseEntity<>(nuevoPaciente, HttpStatus.CREATED);
+        } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }   
-        return new ResponseEntity<>(nuevoPaciente, HttpStatus.CREATED);
+        }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Paciente> obtenerPacientePorId(@PathVariable("id") Long id) {
-        Paciente paciente = service.obtenerPacientePorId(id);
-        if (paciente == null) {
+    public ResponseEntity<Paciente> obtenerPacientePorId(@PathVariable Long id) {
+        try {
+            Paciente paciente = service.obtenerPacientePorId(id);
+            return new ResponseEntity<>(paciente, HttpStatus.OK);
+        } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(paciente, HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<List<Paciente>> listarTodosPacientes(){
-        return new ResponseEntity<List<Paciente>>(service.obtenerTodosLosPacientes(), HttpStatus.OK);
+    public ResponseEntity<List<Paciente>> listarTodosPacientes() {
+        List<Paciente> pacientes = service.obtenerTodosLosPacientes();
+        return new ResponseEntity<>(pacientes, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarPaciente(@PathVariable("id") Long id){
-        Paciente paciente = service.obtenerPacientePorId(id);
-        if(paciente == null){
+    public ResponseEntity<Void> eliminarPaciente(@PathVariable Long id) {
+        try {
+            service.eliminarPacientePorId(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
