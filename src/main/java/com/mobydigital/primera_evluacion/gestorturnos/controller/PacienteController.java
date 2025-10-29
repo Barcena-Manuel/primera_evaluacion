@@ -39,6 +39,7 @@ public class PacienteController {
             Paciente paciente = service.obtenerPacientePorId(id);
             return new ResponseEntity<>(paciente, HttpStatus.OK);
         } catch (RuntimeException e) {
+            System.out.println(e);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }

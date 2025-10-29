@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.mobydigital.primera_evluacion.gestorturnos.exception.DatoInvalidoException;
 import com.mobydigital.primera_evluacion.gestorturnos.exception.DuplicadoException;
@@ -11,6 +12,7 @@ import com.mobydigital.primera_evluacion.gestorturnos.exception.RecursoNoEncontr
 import com.mobydigital.primera_evluacion.gestorturnos.model.Turno;
 import com.mobydigital.primera_evluacion.gestorturnos.repository.interfaces.TurnoRepository;
 
+@Service
 public class TurnoService {
 
     @Autowired
@@ -34,7 +36,7 @@ public class TurnoService {
         if (existeDuplicado) {
             throw new DuplicadoException("Ya existe un turno para ese paciente, profesional y fecha");
         }
-
+        
         return repository.registrarTurno(turno);
     }
 
@@ -53,10 +55,10 @@ public class TurnoService {
         return repository.obtenerTurnoPorId(id);
     }
 
-    public void eliminarTurnoPorId(Long id) throws DatoInvalidoException{
+    public Turno eliminarTurnoPorId(Long id) throws DatoInvalidoException{
         if(id == null || id <= 0){
             throw new DatoInvalidoException("El ID del turno no es válido");
         }
-        repository.eliminarTurnoPorId(id);
+        return repository.eliminarTurnoPorId(id);
     }
 }

@@ -17,10 +17,13 @@ public class PacienteService {
     @Autowired
     private PacienteRepository repository;
 
-    public Paciente crearPaciente(Paciente paciente) throws DuplicadoException{
+    public Paciente crearPaciente(Paciente paciente) throws DuplicadoException, RecursoNoEncontradoException{
         boolean dniExistente = repository.obtenerTodosLosPacientes().stream()
             .anyMatch(p -> p.getDni().equals(paciente.getDni()));
 
+        if(paciente.getDni() == null || paciente.getNombre() == null || paciente.getApellido() == null || paciente.getEmail() == null){
+            throw new RecursoNoEncontradoException("El paciente no tiene datos");
+        }
         if (dniExistente) {
             throw new DuplicadoException("Ya existe un paciente con el DNI: " + paciente.getDni());
         }
@@ -41,10 +44,10 @@ public class PacienteService {
         return pacientes;
     }
 
-    public void eliminarPacientePorId(Long id) throws DatoInvalidoException{
+    public Paciente eliminarPacientePorId(Long id) throws DatoInvalidoException{
         if(id == null || id <= 0){
             throw new DatoInvalidoException("El ID del paciente no es válido");
         }
-        repository.eliminarPacientePorId(id);
+        return repository.eliminarPacientePorId(id);
     }
 }
