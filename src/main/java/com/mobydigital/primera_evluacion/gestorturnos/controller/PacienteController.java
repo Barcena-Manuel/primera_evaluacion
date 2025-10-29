@@ -25,23 +25,14 @@ public class PacienteController {
 
     @PostMapping
     public ResponseEntity<Paciente> crearPaciente(@RequestBody Paciente paciente) {
-        try {
-            Paciente nuevoPaciente = service.crearPaciente(paciente);
-            return new ResponseEntity<>(nuevoPaciente, HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        Paciente nuevoPaciente = service.crearPaciente(paciente);
+        return new ResponseEntity<>(nuevoPaciente, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Paciente> obtenerPacientePorId(@PathVariable Long id) {
-        try {
-            Paciente paciente = service.obtenerPacientePorId(id);
-            return new ResponseEntity<>(paciente, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            System.out.println(e);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        Paciente paciente = service.obtenerPacientePorId(id);
+        return new ResponseEntity<>(paciente, HttpStatus.OK);
     }
 
     @GetMapping
@@ -52,11 +43,7 @@ public class PacienteController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarPaciente(@PathVariable Long id) {
-        try {
-            service.eliminarPacientePorId(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        service.eliminarPacientePorId(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
