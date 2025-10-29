@@ -1,55 +1,53 @@
 package com.mobydigital.primera_evluacion.gestorturnos.repository.listaRepository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.stereotype.Component;
+
+import com.mobydigital.primera_evluacion.gestorturnos.exception.DatoInvalidoException;
 import com.mobydigital.primera_evluacion.gestorturnos.model.Profesional;
 import com.mobydigital.primera_evluacion.gestorturnos.repository.interfaces.ProfesionalRepository;
 
+@Component
 public class ProfesionalListRepository implements ProfesionalRepository {
     
-    private List<Profesional> profesionalas;
+    private final Map<Long, Profesional> profesionales = new HashMap<>();
+    private Long nextId = 1L;
 
-    public ProfesionalListRepository() {
-        this.profesionalas = new ArrayList<>();
+   @Override
+    public Profesional guardarProfesional(Profesional profesional) {
+        if(profesional.getId() == null){
+            profesional.setId(nextId++);
+        }
+
+        profesionales.put(profesional.getId(), profesional);
+        return profesional;
     }
 
     @Override
-    public Profesional crearProfesional(String nombreCompleto, String especialidad) {
-        Long id = profesionalas.size() + 1L;
-        Profesional nuevoProfesional = new Profesional(id, nombreCompleto, especialidad);
-        profesionalas.add(nuevoProfesional);
-        return nuevoProfesional;
-    }
-
-    @Override
-    public Profesional obtenerProfesionalPorId(Long id) {
-        Profesional profesionalEncontrado = profesionalas.stream().filter(p -> p.getId().equals(id)).findFirst().orElse(null);
-        if(profesionalEncontrado != null) {
-            return profesionalEncontrado;
+    public Profesional obtenerProfesionalPorId(Long id) throws DatoInvalidoException{
+        Profesional profesional = profesionales.get(id);
+        if(profesional != null) {
+            return profesional;
         }else{
-            throw new RuntimeException("Profesional no encontrado con ID: " + id);
+            throw new DatoInvalidoException("Profesional no encontrado con ID: " + id);
         }
     }
 
     @Override
     public Profesional eliminarProfesionalPorId(Long id) {
         Profesional profesionalAEliminar = obtenerProfesionalPorId(id);
-        if(profesionalAEliminar != null) {
-            profesionalas.remove(profesionalAEliminar);
-            return profesionalAEliminar;
-        }else{
-            throw new RuntimeException("Profesional no encontrado con ID: " + id);
-        }
+        profesionales.remove(id);
+        return profesionalAEliminar;
     }
 
     @Override
     public List<Profesional> obtenerTodosLosProfesionales() {
-        if(profesionalas.isEmpty()) {
-            throw new RuntimeException("No hay profesionales registrados.");
-        }
-        
-        return profesionalas;
+        List<Profesional> profesionalesList = new ArrayList<>(profesionales.values()); 
+        return profesionalesList;
     }
 
 }

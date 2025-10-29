@@ -6,7 +6,7 @@ import com.mobydigital.primera_evluacion.gestorturnos.model.Paciente;
 
 
 public interface PacienteRepository {
-    public Paciente crearPaciente(String nombre, String apellido, String dni, String email);
+    public Paciente guardarPaciente(Paciente paciente);
     public Paciente obtenerPacientePorId(Long id);
     public Paciente eliminarPacientePorId(Long id);
     public List<Paciente> obtenerTodosLosPacientes();

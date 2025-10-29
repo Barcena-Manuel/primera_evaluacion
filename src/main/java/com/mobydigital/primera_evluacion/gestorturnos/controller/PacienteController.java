@@ -25,33 +25,25 @@ public class PacienteController {
 
     @PostMapping
     public ResponseEntity<Paciente> crearPaciente(@RequestBody Paciente paciente) {
-        Paciente nuevoPaciente = service.crearPaciente(paciente.getNombre(), paciente.getApellido(), paciente.getDni(), paciente.getEmail());
-        if(nuevoPaciente == null){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }   
+        Paciente nuevoPaciente = service.crearPaciente(paciente);
         return new ResponseEntity<>(nuevoPaciente, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Paciente> obtenerPacientePorId(@PathVariable("id") Long id) {
+    public ResponseEntity<Paciente> obtenerPacientePorId(@PathVariable Long id) {
         Paciente paciente = service.obtenerPacientePorId(id);
-        if (paciente == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
         return new ResponseEntity<>(paciente, HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<List<Paciente>> listarTodosPacientes(){
-        return new ResponseEntity<List<Paciente>>(service.obtenerTodosLosPacientes(), HttpStatus.OK);
+    public ResponseEntity<List<Paciente>> listarTodosPacientes() {
+        List<Paciente> pacientes = service.obtenerTodosLosPacientes();
+        return new ResponseEntity<>(pacientes, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarPaciente(@PathVariable("id") Long id){
-        Paciente paciente = service.obtenerPacientePorId(id);
-        if(paciente == null){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<Void> eliminarPaciente(@PathVariable Long id) {
+        service.eliminarPacientePorId(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
