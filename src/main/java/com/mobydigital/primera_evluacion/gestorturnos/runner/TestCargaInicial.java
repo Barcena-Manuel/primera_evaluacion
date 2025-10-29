@@ -38,7 +38,7 @@ public class TestCargaInicial implements CommandLineRunner {
         pacienteService.crearPaciente(p2);
 
         // Creando profesionales de prueba
-        Profesional prof1 = new Profesional(null, "Dr. López", "Clinica");
+        Profesional prof1 = new Profesional(null, "Dr. López", "Clinico");
         Profesional prof2 = new Profesional(null, "Dra. Suárez", "Odontologia");
         profesionalService.crearProfesional(prof1);
         profesionalService.crearProfesional(prof2);

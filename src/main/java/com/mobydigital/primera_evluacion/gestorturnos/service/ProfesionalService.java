@@ -38,8 +38,23 @@ public class ProfesionalService {
         return repository.obtenerProfesionalPorId(id);
     }
 
-    public List<Profesional> obtenerTodosLosProfesionales(){
-        return repository.obtenerTodosLosProfesionales();
+    public List<Profesional> obtenerTodosLosProfesionales() throws RecursoNoEncontradoException{
+        List<Profesional> profesionales = repository.obtenerTodosLosProfesionales();
+        if(profesionales.isEmpty()){
+            throw new RecursoNoEncontradoException("No se encontraron Profesionales");
+        }
+        return profesionales;
+    }
+
+    public List<Profesional> obtenerProfesionalPorEspecialidad(String especialidad) throws RecursoNoEncontradoException{
+        List<Profesional> profesionales = obtenerTodosLosProfesionales();
+        if(especialidad == null){
+            throw new RecursoNoEncontradoException("No se encontro la Especialidad");
+        }
+        profesionales = profesionales.stream()
+            .filter(p -> p.getEspecialidad().equalsIgnoreCase(especialidad)).toList();
+
+        return profesionales;
     }
 
     public Profesional eliminarProfesionalPorId(Long id) throws RecursoNoEncontradoException{

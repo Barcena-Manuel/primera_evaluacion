@@ -40,12 +40,20 @@ public class TurnoService {
         return repository.registrarTurno(turno);
     }
 
-    public List<Turno> obtenerTodosLosTurnos() {
-        return repository.listarTodosLosTurnos();
+    public List<Turno> obtenerTodosLosTurnos() throws RecursoNoEncontradoException{
+        List<Turno> turnos = repository.listarTodosLosTurnos();
+        if(turnos.isEmpty()){
+            throw new RecursoNoEncontradoException("No se encontraron Turnos");
+        }
+        return turnos;
     }
 
-    public List<Turno> obtenerTurnosPorFecha(LocalDate hasta) {
-        return repository.listarTurnosPorFecha(hasta);
+    public List<Turno> obtenerTurnosPorFecha(LocalDate hasta) throws RecursoNoEncontradoException{
+        List<Turno> turnos = repository.listarTurnosPorFecha(hasta);
+        if(turnos.isEmpty()){
+            throw new RecursoNoEncontradoException("No se encontraron Turnos");
+        }
+        return turnos;
     }
 
     public Turno obtenerTurnoPorId(Long id) throws RecursoNoEncontradoException{

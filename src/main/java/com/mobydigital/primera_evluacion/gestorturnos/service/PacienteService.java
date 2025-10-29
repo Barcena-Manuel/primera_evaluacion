@@ -39,8 +39,11 @@ public class PacienteService {
         return repository.obtenerPacientePorId(id);
     }
 
-    public List<Paciente> obtenerTodosLosPacientes(){
+    public List<Paciente> obtenerTodosLosPacientes() throws RecursoNoEncontradoException{
         List<Paciente> pacientes = repository.obtenerTodosLosPacientes();
+        if(pacientes.isEmpty()){
+            throw new RecursoNoEncontradoException("No se encontraron Pacientes");
+        }
         return pacientes;
     }
 

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mobydigital.primera_evluacion.gestorturnos.model.Profesional;
@@ -26,36 +25,26 @@ public class ProfesionalController {
 
     @PostMapping
     public ResponseEntity<Profesional> crearProfesional(@RequestBody Profesional profesional) {
-        try {
-            Profesional nuevo = service.crearProfesional(profesional);
-            return new ResponseEntity<>(nuevo, HttpStatus.CREATED);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        Profesional nuevo = service.crearProfesional(profesional);
+        return new ResponseEntity<>(nuevo, HttpStatus.CREATED);
     }
 
-
     @GetMapping
-    public ResponseEntity<List<Profesional>> obtenerProfesionalPorEspecialidad(@RequestParam(required = false) String especialidad) {
+    public ResponseEntity<List<Profesional>> obtenerTodasLasEspecialidades(){
         List<Profesional> profesionales = service.obtenerTodosLosProfesionales();
+        return new ResponseEntity<>(profesionales, HttpStatus.OK);
+    }
 
-        if (especialidad != null) {
-            profesionales = profesionales.stream()
-                .filter(p -> p.getEspecialidad().equalsIgnoreCase(especialidad))
-                .toList();
-        }
-
+    @GetMapping("/especialidad/{especialidad}")
+    public ResponseEntity<List<Profesional>> obtenerProfesionalPorEspecialidad(@PathVariable(required = false) String especialidad) {
+        List<Profesional> profesionales = service.obtenerProfesionalPorEspecialidad(especialidad);
         return new ResponseEntity<>(profesionales, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Profesional> eliminarProfesionalPorId(@PathVariable Long id){
-        try {
-            Profesional profesional = service.eliminarProfesionalPorId(id);
-            return new ResponseEntity<>(profesional, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<Void> eliminarProfesionalPorId(@PathVariable Long id){
+        service.eliminarProfesionalPorId(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }
