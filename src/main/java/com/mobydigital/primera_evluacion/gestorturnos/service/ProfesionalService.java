@@ -16,11 +16,14 @@ public class ProfesionalService {
     @Autowired
     private ProfesionalRepository repository;
 
-    public Profesional crearProfesional(Profesional profesional) throws DuplicadoException{ 
+    public Profesional crearProfesional(Profesional profesional) throws DuplicadoException, RecursoNoEncontradoException{ 
         boolean duplicado = repository.obtenerTodosLosProfesionales().stream()
             .anyMatch(p -> p.getNombreCompleto().equalsIgnoreCase(profesional.getNombreCompleto()) &&
                            p.getEspecialidad().equalsIgnoreCase(profesional.getEspecialidad()));
 
+        if(profesional.getNombreCompleto() == null || profesional.getEspecialidad() == null){
+            throw new RecursoNoEncontradoException("No tiene datos cargados");
+        }
         if (duplicado) {
             throw new DuplicadoException("Ya existe un profesional con ese nombre y especialidad");
         }
@@ -39,10 +42,10 @@ public class ProfesionalService {
         return repository.obtenerTodosLosProfesionales();
     }
 
-    public void eliminarProfesionalPorId(Long id) throws RecursoNoEncontradoException{
+    public Profesional eliminarProfesionalPorId(Long id) throws RecursoNoEncontradoException{
         if(id == null || id <= 0){
             throw new RecursoNoEncontradoException("El ID del profesional no es válido");
         }
-        repository.eliminarProfesionalPorId(id);
+        return repository.eliminarProfesionalPorId(id);
     }
 }
